@@ -1,84 +1,111 @@
 import './App.css';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
+import profileImage from './assets/profile.jpg';
+import { translations } from './data/translations';
+import { RadarChart, AnimatedCounter } from './components/SkillsComponents';
+import { Timeline } from './components/Timeline';
+import { MatrixRain } from './components/MatrixRain';
+import { Achievements } from './components/Achievements';
+
+import achievement1 from './assets/achievements/ach1.jpg';
+import achievement2 from './assets/achievements/ach2.jpg';
+import achievement3 from './assets/achievements/ach3.jpg';
+import achievement4 from './assets/achievements/ach4.jpg';
+
 
 function App() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
-  const canvasRef = useRef(null);
+  const [language, setLanguage] = useState('mn'); // Default to Mongolian
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const t = translations[language];
+
+  const skillsData = [
+    { name: language === 'mn' ? 'Хөгжүүлэлт' : 'Development', value: 95 },
+    { name: language === 'mn' ? 'Үүлэн технологи' : 'Cloud', value: 90 },
+    { name: language === 'mn' ? 'Аюулгүй байдал' : 'Security', value: 85 },
+    { name: language === 'mn' ? 'DevOps' : 'DevOps', value: 88 },
+    { name: language === 'mn' ? 'Өгөгдөл' : 'Database', value: 92 },
+    { name: language === 'mn' ? 'Сүлжээ' : 'Network', value: 80 }
+  ];
+
+  const achievementsData = [
+    {
+      image: achievement1,
+      title: t.achievement1Title,
+      description: t.achievement1Desc,
+      year: t.achievement1Year,
+      organization: t.achievement1Org
+    },
+    {
+      image: achievement2,
+      title: t.achievement2Title,
+      description: t.achievement2Desc,
+      year: t.achievement2Year,
+      organization: t.achievement2Org
+    },
+    {
+      image: achievement3,
+      title: t.achievement3Title,
+      description: t.achievement3Desc,
+      year: t.achievement3Year,
+      organization: t.achievement3Org
+    },
+    {
+      image: achievement4,
+      title: t.achievement4Title,
+      description: t.achievement4Desc,
+      year: t.achievement4Year,
+      organization: t.achievement4Org
+    },
+    
+  ];
 
   useEffect(() => {
     setIsVisible(true);
-    
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const characters = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
-    const fontSize = 14;
-    const columns = Math.floor(canvas.width / fontSize);
-    const drops = Array(columns).fill(1);
-
-    function draw() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = '#0F0';
-      ctx.font = fontSize + 'px monospace';
-
-      for (let i = 0; i < drops.length; i++) {
-        const text = characters[Math.floor(Math.random() * characters.length)];
-        const x = i * fontSize;
-        const y = drops[i] * fontSize;
-
-        ctx.fillText(text, x, y);
-
-        if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
+    // Scroll to top button visibility
+    const handleScroll = () => {
+      if (window.scrollY > 500) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
       }
-    }
-
-    const interval = setInterval(draw, 33);
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
     };
 
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('resize', handleResize);
-    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   return (
     <div className="App">
       {/* Matrix Rain Background */}
-      <canvas ref={canvasRef} className="matrix-canvas"></canvas>
+      <MatrixRain />
 
-      {/* Mouse Follower */}
-      <div 
-        className="mouse-follower"
-        style={{
-          left: `${mousePosition.x}px`,
-          top: `${mousePosition.y}px`
-        }}
-      ></div>
+      {/* Language Switcher */}
+      <div className="language-switcher">
+        <button 
+          className={`lang-btn ${language === 'mn' ? 'active' : ''}`}
+          onClick={() => setLanguage('mn')}
+        >
+          МН
+        </button>
+        <button 
+          className={`lang-btn ${language === 'en' ? 'active' : ''}`}
+          onClick={() => setLanguage('en')}
+        >
+          EN
+        </button>
+      </div>
 
       {/* Main Content */}
       <main className={`hero-section ${isVisible ? 'visible' : ''}`}>
@@ -86,57 +113,60 @@ function App() {
         <div className="profile-container">
           <div className="profile-ring"></div>
           <div className="profile-image">
-            <span className="profile-placeholder">BDNCR</span>
+            <img src={profileImage} alt="Bilguun Enkhtaivan" className="profile-photo" />
           </div>
         </div>
 
         {/* Text Content */}
         <div className="content">
           <h1 className="title">
-            <span className="greeting">Hello, I'm</span>
-            <span className="name">Bilguun Enkhtaivan</span>
+            <span className="greeting">{t.greeting}</span>
+            <span className="name">{t.name}</span>
           </h1>
           
           <div className="role-container">
-            <p className="role">IT Professional</p>
-            <p className="role-subtitle">& Systems Architect</p>
+            <p className="role">{t.role}</p>
+            <p className="role-subtitle">{t.roleSubtitle}</p>
           </div>
 
           <p className="description">
-            Specialized in building robust infrastructure, developing innovative solutions,
-            and optimizing systems for peak performance. Passionate about cybersecurity,
-            cloud architecture, and emerging technologies.
+            {t.description}
           </p>
 
           {/* Action Buttons */}
           <div className="button-group">
-            <button className="btn btn-primary">
-              View My Work
+            <button className="btn btn-primary" onClick={() => document.getElementById('projects').scrollIntoView({ behavior: 'smooth' })}>
+              {t.viewWork}
               <span className="btn-arrow">→</span>
             </button>
-            <button className="btn btn-secondary">
-              Get In Touch
+            <button className="btn btn-secondary" onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}>
+              {t.getInTouch}
             </button>
           </div>
 
           {/* Social Links */}
           <div className="social-links">
-            <a href="#" className="social-link" aria-label="GitHub">
+            <a href="https://www.facebook.com/enktaivan.bilguun/" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Facebook">
               <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
               </svg>
             </a>
-            <a href="#" className="social-link" aria-label="LinkedIn">
+            <a href="https://www.instagram.com/bilikless/" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+            </a>
+            <a href="https://www.linkedin.com/in/enkhtaivan-bilguun/" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="LinkedIn">
               <svg viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
               </svg>
             </a>
-            <a href="#" className="social-link" aria-label="Twitter">
+            <a href="tel:+80800728" className="social-link" aria-label="Phone">
               <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                <path d="M20 22.621l-3.521-6.795c-.008.004-1.974.97-2.064 1.011-2.24 1.086-6.799-7.82-4.609-8.994l2.083-1.026-3.493-6.817-2.106 1.039c-7.202 3.755 4.233 25.982 11.6 22.615.121-.055 2.102-1.029 2.11-1.033z"/>
               </svg>
             </a>
-            <a href="#" className="social-link" aria-label="Email">
+            <a href="mailto:e.t.bilguun@gmail.com" className="social-link" aria-label="Email">
               <svg viewBox="0 0 24 24" fill="currentColor">
                 <path d="M0 3v18h24v-18h-24zm6.623 7.929l-4.623 5.712v-9.458l4.623 3.746zm-4.141-5.929h19.035l-9.517 7.713-9.518-7.713zm5.694 7.188l3.824 3.099 3.83-3.104 5.612 6.817h-18.779l5.513-6.812zm9.208-1.264l4.616-3.741v9.348l-4.616-5.607z"/>
               </svg>
@@ -148,103 +178,150 @@ function App() {
       {/* Skills & Services Section */}
       <section className="section skills-section">
         <div className="section-content">
-          <h2 className="section-title">Skills & Services</h2>
+          <h2 className="section-title">{t.skillsTitle}</h2>
+          
+          {/* Radar Chart Visualization */}
+          <div className="radar-section">
+            <h3 className="subsection-title">{language === 'mn' ? '📊 Чадварын Түвшин' : '📊 Skill Proficiency'}</h3>
+            
+            {/* Radar and Stats Container */}
+            <div className="radar-stats-container">
+              {/* Radar Chart */}
+              <RadarChart skills={skillsData} />
+              
+              {/* Stats Grid */}
+              <div className="stats-grid">
+                <div className="stat-card">
+                  <div className="stat-number">
+                    <AnimatedCounter end={5} suffix="+" />
+                  </div>
+                  <div className="stat-label">
+                    {language === 'mn' ? 'Жилийн туршлага' : 'Years Experience'}
+                  </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-number">
+                    <AnimatedCounter end={50} suffix="+" />
+                  </div>
+                  <div className="stat-label">
+                    {language === 'mn' ? 'Төсөл' : 'Projects'}
+                  </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-number">
+                    <AnimatedCounter end={30} suffix="+" />
+                  </div>
+                  <div className="stat-label">
+                    {language === 'mn' ? 'Үйлчлүүлэгч' : 'Clients'}
+                  </div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-number">
+                    <AnimatedCounter end={20} suffix="+" />
+                  </div>
+                  <div className="stat-label">
+                    {language === 'mn' ? 'Технологи' : 'Technologies'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           
           {/* Hard Skills */}
           <div className="skills-subsection">
-            <h3 className="subsection-title">💻 Hard Skills</h3>
+            <h3 className="subsection-title">{t.hardSkills}</h3>
             <div className="skills-compact-grid">
               <div className="skill-compact-card">
-                <h4>Languages</h4>
-                <p>JavaScript, TypeScript, Python, Java, C#, SQL</p>
+                <h4>{t.languages}</h4>
+                <p>{t.languagesText}</p>
               </div>
               <div className="skill-compact-card">
-                <h4>Frameworks & Libraries</h4>
-                <p>React, Node.js, Express, Django, Spring Boot</p>
+                <h4>{t.frameworks}</h4>
+                <p>{t.frameworksText}</p>
               </div>
               <div className="skill-compact-card">
-                <h4>Cloud & DevOps</h4>
-                <p>AWS, Azure, GCP, Docker, Kubernetes, CI/CD</p>
+                <h4>{t.cloudDevOps}</h4>
+                <p>{t.cloudDevOpsText}</p>
               </div>
               <div className="skill-compact-card">
-                <h4>Databases</h4>
-                <p>MySQL, PostgreSQL, MongoDB, Redis, DynamoDB</p>
+                <h4>{t.databases}</h4>
+                <p>{t.databasesText}</p>
               </div>
               <div className="skill-compact-card">
-                <h4>Tools & Technologies</h4>
-                <p>Git, Linux, Windows Server, VMware, Terraform</p>
+                <h4>{t.tools}</h4>
+                <p>{t.toolsText}</p>
               </div>
               <div className="skill-compact-card">
-                <h4>Certifications</h4>
-                <p>AWS Solutions Architect, CompTIA Security+, CCNA</p>
+                <h4>{t.certifications}</h4>
+                <p>{t.certificationsText}</p>
               </div>
             </div>
           </div>
 
           {/* Soft Skills */}
           <div className="skills-subsection">
-            <h3 className="subsection-title">🎯 Soft Skills</h3>
+            <h3 className="subsection-title">{t.softSkills}</h3>
             <div className="soft-skills-grid">
               <div className="soft-skill-item">
-                <span className="skill-badge">Team Leadership</span>
+                <span className="skill-badge">{t.teamLeadership}</span>
               </div>
               <div className="soft-skill-item">
-                <span className="skill-badge">Project Management</span>
+                <span className="skill-badge">{t.projectManagement}</span>
               </div>
               <div className="soft-skill-item">
-                <span className="skill-badge">Technical Communication</span>
+                <span className="skill-badge">{t.technicalCommunication}</span>
               </div>
               <div className="soft-skill-item">
-                <span className="skill-badge">Problem Solving</span>
+                <span className="skill-badge">{t.problemSolving}</span>
               </div>
               <div className="soft-skill-item">
-                <span className="skill-badge">Agile Methodologies</span>
+                <span className="skill-badge">{t.agileMethods}</span>
               </div>
               <div className="soft-skill-item">
-                <span className="skill-badge">Client Relations</span>
+                <span className="skill-badge">{t.clientRelations}</span>
               </div>
               <div className="soft-skill-item">
-                <span className="skill-badge">Mentoring & Training</span>
+                <span className="skill-badge">{t.mentoring}</span>
               </div>
               <div className="soft-skill-item">
-                <span className="skill-badge">Strategic Planning</span>
+                <span className="skill-badge">{t.strategicPlanning}</span>
               </div>
             </div>
           </div>
 
           {/* Services Offered */}
           <div className="skills-subsection">
-            <h3 className="subsection-title">🚀 Services I Offer</h3>
+            <h3 className="subsection-title">{t.servicesOffer}</h3>
             <div className="services-compact-grid">
               <div className="service-compact-card">
                 <div className="service-number">01</div>
-                <h4>System Architecture & Design</h4>
-                <p>Scalable infrastructure planning and implementation</p>
+                <h4>{t.service1Title}</h4>
+                <p>{t.service1Text}</p>
               </div>
               <div className="service-compact-card">
                 <div className="service-number">02</div>
-                <h4>Custom Software Development</h4>
-                <p>Full-stack web and mobile application development</p>
+                <h4>{t.service2Title}</h4>
+                <p>{t.service2Text}</p>
               </div>
               <div className="service-compact-card">
                 <div className="service-number">03</div>
-                <h4>Cloud Migration & Setup</h4>
-                <p>AWS, Azure, and GCP deployment and optimization</p>
+                <h4>{t.service3Title}</h4>
+                <p>{t.service3Text}</p>
               </div>
               <div className="service-compact-card">
                 <div className="service-number">04</div>
-                <h4>DevOps & Automation</h4>
-                <p>CI/CD pipelines and infrastructure as code</p>
+                <h4>{t.service4Title}</h4>
+                <p>{t.service4Text}</p>
               </div>
               <div className="service-compact-card">
                 <div className="service-number">05</div>
-                <h4>Security Audits & Implementation</h4>
-                <p>Penetration testing and security hardening</p>
+                <h4>{t.service5Title}</h4>
+                <p>{t.service5Text}</p>
               </div>
               <div className="service-compact-card">
                 <div className="service-number">06</div>
-                <h4>IT Consulting & Support</h4>
-                <p>Strategic tech advice and ongoing maintenance</p>
+                <h4>{t.service6Title}</h4>
+                <p>{t.service6Text}</p>
               </div>
             </div>
           </div>
@@ -254,47 +331,41 @@ function App() {
       {/* Testimonials Section */}
       <section className="section testimonials-section">
         <div className="section-content">
-          <h2 className="section-title">What People Say</h2>
+          <h2 className="section-title">{t.testimonialsTitle}</h2>
           <div className="testimonials-grid">
             <div className="testimonial-card">
               <div className="quote-icon">"</div>
               <p className="testimonial-text">
-                "Bilguun transformed our legacy infrastructure into a modern cloud-based 
-                system. His technical expertise and ability to explain complex concepts 
-                made the entire process smooth and efficient."
+                {t.testimonial1}
               </p>
               <div className="testimonial-author">
                 <div className="author-info">
-                  <h4>Sarah Chen</h4>
-                  <p>CTO, TechStart Inc.</p>
+                  <h4>{t.testimonial1Author}</h4>
+                  <p>{t.testimonial1Role}</p>
                 </div>
               </div>
             </div>
             <div className="testimonial-card">
               <div className="quote-icon">"</div>
               <p className="testimonial-text">
-                "Working with Bilguun was a game-changer. He delivered our application ahead 
-                of schedule with exceptional code quality. His attention to security and 
-                performance is outstanding."
+                {t.testimonial2}
               </p>
               <div className="testimonial-author">
                 <div className="author-info">
-                  <h4>Michael Rodriguez</h4>
-                  <p>Product Manager, InnovateLabs</p>
+                  <h4>{t.testimonial2Author}</h4>
+                  <p>{t.testimonial2Role}</p>
                 </div>
               </div>
             </div>
             <div className="testimonial-card">
               <div className="quote-icon">"</div>
               <p className="testimonial-text">
-                "An exceptional professional who combines deep technical knowledge with 
-                excellent communication skills. Bilguun's solutions are always forward-thinking 
-                and scalable."
+                {t.testimonial3}
               </p>
               <div className="testimonial-author">
                 <div className="author-info">
-                  <h4>Emily Watson</h4>
-                  <p>Senior Developer, CloudSystems</p>
+                  <h4>{t.testimonial3Author}</h4>
+                  <p>{t.testimonial3Role}</p>
                 </div>
               </div>
             </div>
@@ -302,38 +373,145 @@ function App() {
         </div>
       </section>
 
+       {/* Achievements Section */}
+      <section className="section achievements-section">
+        <div className="section-content">
+          <h2 className="section-title">{t.achievementsTitle}</h2>
+          <Achievements achievements={achievementsData} />
+        </div>
+      </section>
+
       {/* About Section */}
       <section className="section about-section">
         <div className="section-content">
-          <h2 className="section-title">About Me</h2>
+          <h2 className="section-title">{t.aboutTitle}</h2>
+          
+          {/* Timeline */}
+          <div className="timeline-section">
+            <h3 className="timeline-header">{t.timelineTitle}</h3>
+            <Timeline items={[
+              { year: t.timeline1Year, title: t.timeline1Title, description: t.timeline1Desc },
+              { year: t.timeline2Year, title: t.timeline2Title, description: t.timeline2Desc },
+              { year: t.timeline3Year, title: t.timeline3Title, description: t.timeline3Desc },
+              { year: t.timeline4Year, title: t.timeline4Title, description: t.timeline4Desc }
+            ]} />
+          </div>
+
           <div className="about-grid">
             <div className="about-card">
-              <h3>🎓 Education & Certifications</h3>
+              <h3>{t.education}</h3>
               <p>
-                Bachelor's degree in Information Technology with industry certifications
-                including AWS Solutions Architect, CompTIA Security+, and Cisco CCNA.
-                Continuously learning and staying updated with the latest tech trends.
+                {t.educationText}
               </p>
             </div>
             <div className="about-card">
-              <h3>💼 Professional Experience</h3>
+              <h3>{t.experience}</h3>
               <p>
-                5+ years of experience in IT infrastructure, software development, and
-                system administration. From managing enterprise networks to developing
-                scalable applications, I bring comprehensive technical expertise.
+                {t.experienceText}
               </p>
             </div>
             <div className="about-card">
-              <h3>🚀 What I Do</h3>
+              <h3>{t.whatIDo}</h3>
               <p>
-                Design and implement IT solutions, develop custom software, manage cloud
-                infrastructure, ensure system security, and provide technical leadership
-                for complex projects. Always focused on efficiency and innovation.
+                {t.whatIDoText}
               </p>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Projects Section */}
+      <section id="projects" className="projects-section">
+        <div className="container">
+          <h2 className="section-title">{t.projectsTitle}</h2>
+          <div className="projects-grid">
+            <div className="project-card">
+              <div className="project-content">
+                <h3>{t.project1Title}</h3>
+                <p>{t.project1Desc}</p>
+                <div className="project-tech">{t.project1Tech}</div>
+              </div>
+            </div>
+            <div className="project-card">
+              <div className="project-content">
+                <h3>{t.project2Title}</h3>
+                <p>{t.project2Desc}</p>
+                <div className="project-tech">{t.project2Tech}</div>
+              </div>
+            </div>
+            <div className="project-card">
+              <div className="project-content">
+                <h3>{t.project3Title}</h3>
+                <p>{t.project3Desc}</p>
+                <div className="project-tech">{t.project3Tech}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="contact-section">
+        <div className="container">
+          <h2 className="section-title">{t.contactTitle}</h2>
+          <p className="contact-subtitle">{t.contactSubtitle}</p>
+          <div className="contact-grid">
+            <div className="contact-form-container">
+              <form className="contact-form">
+                <div className="form-group">
+                  <input type="text" placeholder={t.contactName} required />
+                </div>
+                <div className="form-group">
+                  <input type="email" placeholder={t.contactEmail} required />
+                </div>
+                <div className="form-group">
+                  <textarea placeholder={t.contactMessage} rows="5" required></textarea>
+                </div>
+                <button type="submit" className="btn btn-primary">
+                  {t.contactSend}
+                  <span className="btn-arrow">→</span>
+                </button>
+              </form>
+            </div>
+            <div className="contact-info-container">
+              <h3>{t.contactInfo}</h3>
+              <div className="contact-info-item">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+                <a href="mailto:e.t.bilguun@gmail.com">e.t.bilguun@gmail.com</a>
+              </div>
+              <div className="contact-info-item">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <path d="M20 22.621l-3.521-6.795c-.008.004-1.974.97-2.064 1.011-2.24 1.086-6.799-7.82-4.609-8.994l2.083-1.026-3.493-6.817-2.106 1.039c-7.202 3.755 4.233 25.982 11.6 22.615.121-.055 2.102-1.029 2.11-1.033z"/>
+                </svg>
+                <a href="tel:+80800728">+976 8080-0728</a>
+              </div>
+              <div className="contact-info-item">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+                <a href="https://www.linkedin.com/in/enkhtaivan-bilguun/" target="_blank" rel="noopener noreferrer">LinkedIn Profile</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+     
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button 
+          className="scroll-to-top"
+          onClick={scrollToTop}
+          aria-label="Scroll to top"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
