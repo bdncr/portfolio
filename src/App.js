@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import profileImage from './assets/profile.jpg';
 import { translations } from './data/translations';
 import { RadarChart, AnimatedCounter } from './components/SkillsComponents';
-import { Timeline } from './components/Timeline';
 import { MatrixRain } from './components/MatrixRain';
 import { Achievements } from './components/Achievements';
 
@@ -135,11 +134,7 @@ function App() {
 
           {/* Action Buttons */}
           <div className="button-group">
-            <button className="btn btn-primary" onClick={() => document.getElementById('projects').scrollIntoView({ behavior: 'smooth' })}>
-              {t.viewWork}
-              <span className="btn-arrow">→</span>
-            </button>
-            <button className="btn btn-secondary" onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}>
+            <button className="btn btn-primary" onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}>
               {t.getInTouch}
             </button>
           </div>
@@ -328,125 +323,11 @@ function App() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="section testimonials-section">
-        <div className="section-content">
-          <h2 className="section-title">{t.testimonialsTitle}</h2>
-          <div className="testimonials-grid">
-            <div className="testimonial-card">
-              <div className="quote-icon">"</div>
-              <p className="testimonial-text">
-                {t.testimonial1}
-              </p>
-              <div className="testimonial-author">
-                <div className="author-info">
-                  <h4>{t.testimonial1Author}</h4>
-                  <p>{t.testimonial1Role}</p>
-                </div>
-              </div>
-            </div>
-            <div className="testimonial-card">
-              <div className="quote-icon">"</div>
-              <p className="testimonial-text">
-                {t.testimonial2}
-              </p>
-              <div className="testimonial-author">
-                <div className="author-info">
-                  <h4>{t.testimonial2Author}</h4>
-                  <p>{t.testimonial2Role}</p>
-                </div>
-              </div>
-            </div>
-            <div className="testimonial-card">
-              <div className="quote-icon">"</div>
-              <p className="testimonial-text">
-                {t.testimonial3}
-              </p>
-              <div className="testimonial-author">
-                <div className="author-info">
-                  <h4>{t.testimonial3Author}</h4>
-                  <p>{t.testimonial3Role}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
        {/* Achievements Section */}
       <section className="section achievements-section">
         <div className="section-content">
           <h2 className="section-title">{t.achievementsTitle}</h2>
           <Achievements achievements={achievementsData} />
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section className="section about-section">
-        <div className="section-content">
-          <h2 className="section-title">{t.aboutTitle}</h2>
-          
-          {/* Timeline */}
-          <div className="timeline-section">
-            <h3 className="timeline-header">{t.timelineTitle}</h3>
-            <Timeline items={[
-              { year: t.timeline1Year, title: t.timeline1Title, description: t.timeline1Desc },
-              { year: t.timeline2Year, title: t.timeline2Title, description: t.timeline2Desc },
-              { year: t.timeline3Year, title: t.timeline3Title, description: t.timeline3Desc },
-              { year: t.timeline4Year, title: t.timeline4Title, description: t.timeline4Desc }
-            ]} />
-          </div>
-
-          <div className="about-grid">
-            <div className="about-card">
-              <h3>{t.education}</h3>
-              <p>
-                {t.educationText}
-              </p>
-            </div>
-            <div className="about-card">
-              <h3>{t.experience}</h3>
-              <p>
-                {t.experienceText}
-              </p>
-            </div>
-            <div className="about-card">
-              <h3>{t.whatIDo}</h3>
-              <p>
-                {t.whatIDoText}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Projects Section */}
-      <section id="projects" className="projects-section">
-        <div className="container">
-          <h2 className="section-title">{t.projectsTitle}</h2>
-          <div className="projects-grid">
-            <div className="project-card">
-              <div className="project-content">
-                <h3>{t.project1Title}</h3>
-                <p>{t.project1Desc}</p>
-                <div className="project-tech">{t.project1Tech}</div>
-              </div>
-            </div>
-            <div className="project-card">
-              <div className="project-content">
-                <h3>{t.project2Title}</h3>
-                <p>{t.project2Desc}</p>
-                <div className="project-tech">{t.project2Tech}</div>
-              </div>
-            </div>
-            <div className="project-card">
-              <div className="project-content">
-                <h3>{t.project3Title}</h3>
-                <p>{t.project3Desc}</p>
-                <div className="project-tech">{t.project3Tech}</div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
